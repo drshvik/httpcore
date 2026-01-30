@@ -60,7 +60,9 @@ def _init_socks5_connection(
     stream.write(outgoing_bytes, timeout=timeout)  # <--- FIX 2: Pass timeout
 
     # Auth method response
-    incoming_bytes = stream.read(max_bytes=4096, timeout=timeout) # <--- FIX 3: Pass timeout
+    incoming_bytes = stream.read(
+        max_bytes=4096, timeout=timeout
+    )  # <--- FIX 3: Pass timeout
     response = conn.receive_data(incoming_bytes)
     assert isinstance(response, socksio.socks5.SOCKS5AuthReply)
     if response.method != auth_method:
@@ -76,10 +78,12 @@ def _init_socks5_connection(
         username, password = auth
         conn.send(socksio.socks5.SOCKS5UsernamePasswordRequest(username, password))
         outgoing_bytes = conn.data_to_send()
-        stream.write(outgoing_bytes, timeout=timeout) # <--- FIX 4: Pass timeout
+        stream.write(outgoing_bytes, timeout=timeout)  # <--- FIX 4: Pass timeout
 
         # Username/password response
-        incoming_bytes = stream.read(max_bytes=4096, timeout=timeout) # <--- FIX 5: Pass timeout
+        incoming_bytes = stream.read(
+            max_bytes=4096, timeout=timeout
+        )  # <--- FIX 5: Pass timeout
         response = conn.receive_data(incoming_bytes)
         assert isinstance(response, socksio.socks5.SOCKS5UsernamePasswordReply)
         if not response.success:
@@ -92,10 +96,12 @@ def _init_socks5_connection(
         )
     )
     outgoing_bytes = conn.data_to_send()
-    stream.write(outgoing_bytes, timeout=timeout) # <--- FIX 6: Pass timeout
+    stream.write(outgoing_bytes, timeout=timeout)  # <--- FIX 6: Pass timeout
 
     # Connect response
-    incoming_bytes = stream.read(max_bytes=4096, timeout=timeout) # <--- FIX 7: Pass timeout
+    incoming_bytes = stream.read(
+        max_bytes=4096, timeout=timeout
+    )  # <--- FIX 7: Pass timeout
     response = conn.receive_data(incoming_bytes)
     assert isinstance(response, socksio.socks5.SOCKS5Reply)
     if response.reply_code != socksio.socks5.SOCKS5ReplyCode.SUCCEEDED:
@@ -211,7 +217,7 @@ class Socks5Connection(ConnectionInterface):
                         "host": self._remote_origin.host.decode("ascii"),
                         "port": self._remote_origin.port,
                         "auth": self._proxy_auth,
-                        "timeout": timeout, # <--- FIX 8: Pass timeout to handshake
+                        "timeout": timeout,  # <--- FIX 8: Pass timeout argument
                     }
                     with Trace(
                         "setup_socks5_connection", logger, request, kwargs
